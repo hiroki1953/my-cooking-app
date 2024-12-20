@@ -1,5 +1,7 @@
 import { RecipeBadge } from "./recipe-badge";
 import { DayRecipe } from "../types/calendar";
+import Link from "next/link";
+import { ReceiptText } from "lucide-react";
 
 interface RecipeDetailsProps {
   selectedDate: Date;
@@ -16,7 +18,7 @@ export function RecipeDetails({ selectedDate, recipes }: RecipeDetailsProps) {
     )?.recipes || [];
 
   return (
-    <div className="bg-white rounded-lg shadow p-4 mt-4">
+    <div className="bg-white rounded-lg shadow p-4 pb-16 mt-4 relative">
       <h2 className="text-xl font-semibold mb-4">
         {selectedDate.getFullYear()}年{selectedDate.getMonth() + 1}月
         {selectedDate.getDate()}日の料理
@@ -28,9 +30,6 @@ export function RecipeDetails({ selectedDate, recipes }: RecipeDetailsProps) {
               <RecipeBadge recipe={recipe} />
               <div>
                 <h3 className="text-lg font-medium">{recipe.name}</h3>
-                <p className="text-gray-600">
-                  料理の詳細説明をここに追加します。
-                </p>
               </div>
             </li>
           ))}
@@ -38,6 +37,14 @@ export function RecipeDetails({ selectedDate, recipes }: RecipeDetailsProps) {
       ) : (
         <p className="text-gray-600">この日の料理は登録されていません。</p>
       )}
+      <Link
+        href={`/meal/${selectedDate.getFullYear()}-${
+          selectedDate.getMonth() + 1
+        }-${selectedDate.getDate()}`}
+        className="absolute right-4 bottom-4 bg-pink-500 text-white rounded-lg shadow hover:bg-pink-600 flex items-center gap-2 px-4 py-2"
+      >
+        <ReceiptText />
+      </Link>
     </div>
   );
 }
