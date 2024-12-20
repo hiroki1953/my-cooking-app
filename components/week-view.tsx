@@ -9,12 +9,7 @@ interface WeekViewProps {
   onNextWeek: () => void;
 }
 
-export function WeekView({
-  currentDate,
-  recipes,
-  onPrevWeek,
-  onNextWeek,
-}: WeekViewProps) {
+export function WeekView({ currentDate, recipes }: WeekViewProps) {
   const startOfWeek = new Date(currentDate);
   startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
 
