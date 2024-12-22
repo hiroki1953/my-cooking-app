@@ -5,23 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-
-type Dish = {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-  ingredients: {
-    id: number;
-    name: string;
-    unit: string;
-  }[];
-  steps: {
-    id: number;
-    step: string;
-    description: string;
-  }[];
-};
+import { Dish } from "@/types/dish";
 
 export default function MealDetailPage() {
   const { data } = useParams(); // 動的ルートのパラメータを取得

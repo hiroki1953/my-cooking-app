@@ -17,31 +17,11 @@ import {
 } from "./ui/select";
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
-
-interface Ingredient {
-  id?: number;
-  name: string;
-  unit: string;
-}
-interface Step {
-  id?: number;
-  step: string;
-  description: string;
-}
+import { Dish, Ingredient, Step } from "@/types/dish";
 
 interface MealFormProps {
-  initialDish?: {
-    name: string;
-    description: string;
-    category: string;
-    ingredients: Ingredient[];
-    steps: Step[];
-  };
-  onSave: (dish: {
-    name: string;
-    ingredients: Ingredient[];
-    steps: Step[];
-  }) => void;
+  initialDish?: Dish;
+  onSave: (dish: Dish) => void;
 }
 
 interface DraggableStepProps {
@@ -125,6 +105,7 @@ const DraggableStep: React.FC<DraggableStepProps> = ({
 
 const MealForm: React.FC<MealFormProps> = ({ initialDish, onSave }) => {
   const defaultDish = {
+    id: 0,
     name: "",
     description: "",
     category: "",
@@ -133,6 +114,7 @@ const MealForm: React.FC<MealFormProps> = ({ initialDish, onSave }) => {
   };
 
   const [dish, setDish] = useState({
+    id: initialDish?.id || defaultDish.id,
     name: initialDish?.name || defaultDish.name,
     description: initialDish?.description || defaultDish.description,
     category: initialDish?.category || defaultDish.category,

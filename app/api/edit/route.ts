@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/initSupabase";
+import { Ingredient, Step } from "@/types/dish";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
@@ -55,11 +56,11 @@ export async function POST(request: Request) {
 
   if (dish.ingredients.length > 0) {
     // 更新と新規挿入用の配列を準備
-    const existingIngredientData = [];
-    const newIngredientData = [];
+    const existingIngredientData: Ingredient[] = [];
+    const newIngredientData: Ingredient[] = [];
 
     // 更新用と新規挿入用に振り分け
-    dish.ingredients.forEach((ingredient) => {
+    dish.ingredients.forEach((ingredient: Ingredient) => {
       if (ingredient.id !== 0) {
         existingIngredientData.push(ingredient); // idが存在する場合は更新
       } else {
@@ -121,11 +122,11 @@ export async function POST(request: Request) {
     console.log(dish.steps);
 
     // 更新と新規挿入用の配列を準備
-    const existingStepData = [];
-    const newStepsData = [];
+    const existingStepData: Step[] = [];
+    const newStepsData: Step[] = [];
 
     // 更新用と新規挿入用に振り分け
-    dish.steps.forEach((step) => {
+    dish.steps.forEach((step: Step) => {
       if (step.id) {
         existingStepData.push(step); // idが存在する場合は更新
       } else {

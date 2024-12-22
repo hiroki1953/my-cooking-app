@@ -1,25 +1,9 @@
 "use client";
 
 import MealForm from "@/components/MealForm";
+import { Dish } from "@/types/dish";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-
-type Dish = {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-  ingredients: {
-    id: number;
-    name: string;
-    unit: string;
-  }[];
-  steps: {
-    id: number;
-    step: string;
-    description: string;
-  }[];
-};
 
 const MealRegisterPage = () => {
   const router = useRouter();

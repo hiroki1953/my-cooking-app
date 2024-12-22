@@ -1,24 +1,8 @@
 "use client";
 
 import MealForm from "@/components/MealForm";
+import { Dish } from "@/types/dish";
 import { useParams, useRouter } from "next/navigation";
-
-type Dish = {
-  id: number;
-  name: string;
-  description: string;
-  category: string;
-  ingredients: {
-    id: number;
-    name: string;
-    unit: string;
-  }[];
-  steps: {
-    id: number;
-    step: string;
-    description: string;
-  }[];
-};
 
 const MealRegisterPage = () => {
   const router = useRouter();
@@ -45,7 +29,7 @@ const MealRegisterPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <MealForm initialDish="" onSave={handleSave} />
+      <MealForm onSave={handleSave} />
     </div>
   );
 };
