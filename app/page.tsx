@@ -3,7 +3,7 @@ import { CalendarRecipe } from "@/types/calendar";
 
 export default async function Page() {
   // /api/calendarsエンドポイントからデータを取得
-  const res = await fetch("http://localhost:3000/api/calendars", {
+  const res = await fetch("/api/calendars", {
     cache: "no-store", // 最新データを取得したい場合
   });
 
