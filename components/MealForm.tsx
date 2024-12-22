@@ -18,6 +18,7 @@ import {
 import { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Dish, Ingredient, Step } from "@/types/dish";
+import { fetchFromApi } from "@/lib/fetch";
 
 interface MealFormProps {
   initialDish?: Dish;
@@ -204,17 +205,10 @@ const MealForm: React.FC<MealFormProps> = ({ initialDish, onSave }) => {
 
   const deleteTable = async (id: number, table: string) => {
     try {
-      const response = await fetch(`/api/edit`, {
+      await fetchFromApi(`/api/edit`, {
         method: "DELETE",
         body: JSON.stringify({ id: id, table: table }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error deleting dish:", errorData);
-        alert("削除に失敗しました");
-        return;
-      }
     } catch (error) {
       console.error("Unexpected error:", error);
       alert("予期しないエラーが発生しました");

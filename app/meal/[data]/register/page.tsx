@@ -1,6 +1,7 @@
 "use client";
 
 import MealForm from "@/components/MealForm";
+import { fetchFromApi } from "@/lib/fetch";
 import { Dish } from "@/types/dish";
 import { useParams, useRouter } from "next/navigation";
 
@@ -11,17 +12,16 @@ const MealRegisterPage = () => {
   const handleSave = async (dish: Dish) => {
     // Supabase APIを利用してデータを保存
     try {
-      const response = await fetch("/api/meal", {
+      const response = await fetchFromApi("/api/meal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ date: data, dish }),
       });
-      if (!response.ok) {
-        throw new Error("Error saving data");
-      }
 
-      // 成功した場合はカレンダーに戻る
-      router.push("/");
+      if (response.status == 200) {
+        // 成功した場合はカレンダーに戻る
+        router.push("/");
+      }
     } catch (error) {
       console.error("Failed to save meal:", error);
     }

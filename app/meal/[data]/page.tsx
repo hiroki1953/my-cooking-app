@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Dish } from "@/types/dish";
+import { fetchFromApi } from "@/lib/fetch";
 
 export default function MealDetailPage() {
   const { data } = useParams(); // 動的ルートのパラメータを取得
@@ -23,20 +24,13 @@ export default function MealDetailPage() {
 
   const deleteDish = async (dishId: number) => {
     try {
-      const response = await fetch(`/api/meal`, {
+      const response = await fetchFromApi(`/api/meal`, {
         method: "DELETE",
         body: JSON.stringify({ id: dishId }),
       });
 
-      if (response.ok) {
+      if (response.status == 200) {
         window.location.reload();
-      }
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Error deleting dish:", errorData);
-        alert("削除に失敗しました");
-        return;
       }
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -48,12 +42,7 @@ export default function MealDetailPage() {
     const fetchMealData = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/meal?date=${data}`); // APIを呼び出し
-        const json = await res.json();
-
-        if (!res.ok) {
-          throw new Error(json.error || "Failed to fetch meal data");
-        }
+        const json = await fetchFromApi(`/api/meal?date=${data}`); // APIを呼び出し
 
         setMealData(json || null); // 必要なデータを設定
       } catch (error) {

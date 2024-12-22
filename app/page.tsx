@@ -1,14 +1,12 @@
 import { RecipeCalendar } from "@/components/recipe-calendar";
+import { fetchFromApi } from "@/lib/fetch";
 import { CalendarRecipe } from "@/types/calendar";
 
 export default async function Page() {
   // /api/calendarsエンドポイントからデータを取得
-  const res = await fetch("/api/calendars", {
+  const data: CalendarRecipe[] = await fetchFromApi("/api/calendars", {
     cache: "no-store", // 最新データを取得したい場合
   });
-
-  // データの型をRecipeData[]として受け取る
-  const data: CalendarRecipe[] = await res.json();
 
   // 受け取ったdataからinitialRecipes配列を生成
   const initialRecipes = data.map((item) => ({

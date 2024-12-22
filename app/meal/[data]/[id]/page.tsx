@@ -1,6 +1,7 @@
 "use client";
 
 import MealForm from "@/components/MealForm";
+import { fetchFromApi } from "@/lib/fetch";
 import { Dish } from "@/types/dish";
 import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,18 +13,16 @@ const MealRegisterPage = () => {
   const handleSave = async (dish: Dish) => {
     // Supabase APIを利用してデータを保存
     try {
-      const response = await fetch("/api/edit", {
+      const response = await fetchFromApi("/api/edit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id: id, dish }),
       });
 
-      if (!response.ok) {
-        throw new Error("Error saving data");
+      if (response.status == 200) {
+        // 成功した場合はカレンダーに戻る
+        router.push("/");
       }
-
-      // 成功した場合はカレンダーに戻る
-      router.push("/");
     } catch (error) {
       console.error("Failed to save meal:", error);
     }
@@ -36,12 +35,7 @@ const MealRegisterPage = () => {
     const fetchMealData = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/edit?id=${id}`); // APIを呼び出し
-        const json = await res.json();
-
-        if (!res.ok) {
-          throw new Error(json.error || "Failed to fetch meal data");
-        }
+        const json = await fetchFromApi(`/api/edit?id=${id}`); // APIを呼び出し
 
         setMealData(json || null); // 必要なデータを設定
       } catch (error) {
