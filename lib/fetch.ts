@@ -1,7 +1,8 @@
 // utils/fetch.ts
 export async function fetchFromApi(endpoint: string, options?: RequestInit) {
   const baseUrl =
-    process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000";
+    "https://my-cooking-9p60aapqg-hiroki1953s-projects.vercel.app/" ||
+    "http://localhost:3000";
   const fullUrl = `${baseUrl}${endpoint}`;
 
   const res = await fetch(fullUrl, options);
