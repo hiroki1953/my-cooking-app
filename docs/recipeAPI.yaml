@@ -1,0 +1,383 @@
+openapi: 3.0.0
+info:
+  title: 料理情報管理API
+  version: 1.0.0
+paths:
+  /groups/{groupId}/recipes:
+    get:
+      summary: グループ内の料理一覧を取得
+      description: 指定されたグループに関連付けられているすべての料理情報を取得します。
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: グループのID。
+          schema:
+            type: integer
+        - name: category
+          in: query
+          required: false
+          description: "絞り込むカテゴリ（例: 和食）。"
+          schema:
+            type: string
+        - name: keyword
+          in: query
+          required: false
+          description: キーワードでの検索条件。
+          schema:
+            type: string
+      responses:
+        "200":
+          description: グループ内の料理一覧の取得に成功。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    recipe_id:
+                      type: integer
+                      description: 料理ID。
+                      example: 1
+                    recipe_name:
+                      type: string
+                      description: 料理名。
+                      example: 寿司
+                    category:
+                      type: string
+                      description: レシピカテゴリ。
+                      example: 和食
+                    calories:
+                      type: number
+                      description: カロリー情報。
+                      example: 300
+                    cooking_time:
+                      type: integer
+                      description: 調理時間（分）。
+                      example: 45
+                    servings:
+                      type: integer
+                      description: 何人前か。
+                      example: 4
+        "404":
+          description: 指定されたグループが見つかりません。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Group not found.
+    post:
+      summary: 新しい料理の登録
+      description: 指定したグループに料理を登録し、同時にそのグループと紐付けます。
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: 料理を登録する対象グループのID。
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipe_name:
+                  type: string
+                  description: 料理名。
+                  example: 寿司
+                category:
+                  type: string
+                  description: "レシピカテゴリ（例: 和食、洋食）。"
+                  example: 和食
+                calories:
+                  type: number
+                  description: カロリー情報。
+                  example: 300
+                cooking_time:
+                  type: integer
+                  description: 調理時間（分）。
+                  example: 45
+                servings:
+                  type: integer
+                  description: 何人前か。
+                  example: 4
+                protein:
+                  type: number
+                  description: タンパク質量。
+                  example: 20
+                fat:
+                  type: number
+                  description: 脂質量。
+                  example: 10
+                carbohydrate:
+                  type: number
+                  description: 炭水化物量。
+                  example: 50
+                ingredients:
+                  type: array
+                  description: 材料のリスト。
+                  items:
+                    type: object
+                    properties:
+                      ingredient_name:
+                        type: string
+                        description: 材料名。
+                        example: ご飯
+                      quantity:
+                        type: number
+                        description: 材料の分量。
+                        example: 200
+                      unit:
+                        type: string
+                        description: "材料の単位（例: g, mL）。"
+                        example: g
+                steps:
+                  type: array
+                  description: 調理手順のリスト。
+                  items:
+                    type: object
+                    properties:
+                      step_num:
+                        type: integer
+                        description: 手順の順序。
+                        example: 1
+                      step_description:
+                        type: string
+                        description: 手順の説明。
+                        example: ご飯を炊く
+      responses:
+        "201":
+          description: 料理が正常に登録され、グループと紐付けられました。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recipe_id:
+                    type: integer
+                    description: 登録された料理のID。
+                    example: 1
+                  group_id:
+                    type: integer
+                    description: 紐付けられたグループのID。
+                    example: 1
+                  message:
+                    type: string
+                    description: 登録成功メッセージ。
+                    example: Recipe successfully created and associated with the group.
+        "404":
+          description: 指定されたグループが見つかりません。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Group not found.
+        "400":
+          description: リクエストの内容に問題があります。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Invalid request body.
+  /recipes/{recipeId}:
+    get:
+      summary: 特定の料理情報を取得
+      description: 指定された料理IDに対応する詳細情報を取得します。
+      parameters:
+        - name: recipeId
+          in: path
+          required: true
+          description: 料理のID。
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: 料理情報の取得に成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recipe_id:
+                    type: integer
+                    description: 料理ID。
+                    example: 1
+                  recipe_name:
+                    type: string
+                    description: 料理名。
+                    example: 寿司
+                  category:
+                    type: string
+                    description: レシピカテゴリ。
+                    example: 和食
+                  calories:
+                    type: number
+                    description: カロリー情報。
+                    example: 300
+                  cooking_time:
+                    type: integer
+                    description: 調理時間（分）。
+                    example: 45
+                  servings:
+                    type: integer
+                    description: 何人前か。
+                    example: 4
+                  ingredients:
+                    type: array
+                    description: 材料のリスト。
+                    items:
+                      type: object
+                      properties:
+                        ingredient_name:
+                          type: string
+                          description: 材料名。
+                          example: ご飯
+                        quantity:
+                          type: number
+                          description: 材料の分量。
+                          example: 200
+                        unit:
+                          type: string
+                          description: "材料の単位（例: g, mL）。"
+                          example: g
+                  steps:
+                    type: array
+                    description: 調理手順のリスト。
+                    items:
+                      type: object
+                      properties:
+                        step_num:
+                          type: integer
+                          description: 手順の順序。
+                          example: 1
+                        step_description:
+                          type: string
+                          description: 手順の説明。
+                          example: ご飯を炊く
+        "404":
+          description: 指定された料理が見つかりません。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Recipe not found.
+    put:
+      summary: 料理情報の更新
+      description: 指定された料理の情報を更新します。
+      parameters:
+        - name: recipeId
+          in: path
+          required: true
+          description: 更新する料理のID。
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                recipe_name:
+                  type: string
+                  description: 更新する料理名。
+                  example: 改良寿司
+                category:
+                  type: string
+                  description: 更新するレシピカテゴリ。
+                  example: 和食
+                calories:
+                  type: number
+                  description: 更新するカロリー情報。
+                  example: 350
+                cooking_time:
+                  type: integer
+                  description: 更新する調理時間（分）。
+                  example: 50
+                servings:
+                  type: integer
+                  description: 更新する何人前か。
+                  example: 5
+      responses:
+        "200":
+          description: 料理情報の更新に成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recipe_id:
+                    type: integer
+                    description: 更新された料理のID。
+                    example: 1
+                  message:
+                    type: string
+                    description: 更新成功メッセージ。
+                    example: Recipe successfully updated.
+        "404":
+          description: 指定された料理が見つかりません。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Recipe not found.
+    delete:
+      summary: 料理の削除
+      description: 指定された料理を削除します。
+      parameters:
+        - name: recipeId
+          in: path
+          required: true
+          description: 削除する料理のID。
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: 料理の削除に成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recipe_id:
+                    type: integer
+                    description: 削除された料理のID。
+                    example: 1
+                  message:
+                    type: string
+                    description: 削除成功メッセージ。
+                    example: Recipe successfully deleted.
+        "404":
+          description: 指定された料理が見つかりません。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Recipe not found.

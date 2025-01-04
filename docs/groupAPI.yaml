@@ -1,0 +1,254 @@
+openapi: 3.0.0
+info:
+  title: グループ管理API
+  version: 1.0.0
+paths:
+  /groups:
+    get:
+      summary: ユーザーが所属するグループ一覧の取得
+      description: ログイン中のユーザーが所属しているグループの一覧を取得します。
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: グループ一覧の取得に成功。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    group_id:
+                      type: integer
+                      description: グループID。
+                      example: 1
+                    group_name:
+                      type: string
+                      description: グループ名。
+                      example: 家族のグループ
+                    created_by_user_id:
+                      type: integer
+                      description: グループを作成したユーザーID。
+                      example: 1
+                    created_at:
+                      type: string
+                      format: date-time
+                      description: グループ作成日時。
+                      example: "2024-12-01T10:00:00Z"
+        "401":
+          description: 認証エラー。トークンが無効または未提供です。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Unauthorized access.
+
+    post:
+      summary: 新しいグループの作成
+      description: 新しいグループを作成し、ログイン中のユーザーを作成者として登録します。
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                group_name:
+                  type: string
+                  description: 新しく作成するグループの名前。
+                  example: 家族のグループ
+      responses:
+        "201":
+          description: グループの作成に成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  group_id:
+                    type: integer
+                    description: 作成されたグループのID。
+                    example: 1
+                  message:
+                    type: string
+                    description: 作成成功メッセージ。
+                    example: Group successfully created.
+        "400":
+          description: 入力データが無効です。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Invalid group name.
+
+  /groups/{groupId}:
+    get:
+      summary: 特定のグループ情報の取得
+      description: 指定したグループの詳細情報を取得します。
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: グループID。
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: グループ情報の取得に成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  group_id:
+                    type: integer
+                    description: グループID。
+                    example: 1
+                  group_name:
+                    type: string
+                    description: グループ名。
+                    example: 家族のグループ
+                  created_by_user_id:
+                    type: integer
+                    description: グループを作成したユーザーID。
+                    example: 1
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: グループ作成日時。
+                    example: "2024-12-01T10:00:00Z"
+                  members:
+                    type: array
+                    description: グループメンバーのリスト。
+                    items:
+                      type: object
+                      properties:
+                        user_id:
+                          type: integer
+                          description: ユーザーID。
+                          example: 2
+                        user_name:
+                          type: string
+                          description: ユーザー名。
+                          example: 山田花子
+        "404":
+          description: 指定されたグループが見つかりません。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Group not found.
+
+    delete:
+      summary: グループの削除
+      description: 指定されたグループを削除します。グループ作成者のみがこの操作を実行できます。
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: 削除するグループのID。
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: グループの削除に成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 削除成功メッセージ。
+                    example: Group successfully deleted.
+        "403":
+          description: 権限エラー。グループ作成者以外のユーザーが削除を試みた場合。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Forbidden. Only the group creator can delete this group.
+        "404":
+          description: 指定されたグループが見つかりません。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Group not found.
+
+  /groups/{groupId}/members:
+    get:
+      summary: グループメンバー一覧の取得
+      description: 指定したグループのメンバーを一覧で取得します。
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: グループID。
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: グループメンバー一覧の取得に成功。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    user_id:
+                      type: integer
+                      description: ユーザーID。
+                      example: 2
+                    user_name:
+                      type: string
+                      description: ユーザー名。
+                      example: 山田花子
+        "404":
+          description: 指定されたグループが見つかりません。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Group not found.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

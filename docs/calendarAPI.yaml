@@ -1,0 +1,141 @@
+openapi: 3.0.0
+info:
+  title: カレンダー情報管理API
+  version: 1.0.0
+paths:
+  /groups/{groupId}/calendar:
+    get:
+      summary: カレンダー料理情報の取得
+      description: 特定のグループに関連付けられたカレンダー上のすべての料理情報を取得します。
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: グループのID。
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: カレンダー料理情報の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    date:
+                      type: string
+                      format: date
+                      example: "yyyy-mm-dd"
+                    recipes:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          recipeId:
+                            type: integer
+                            example: 3
+                          recipeName:
+                            type: string
+                            example: "料理名が入ります"
+                          category:
+                            type: string
+                            example: "和食・中華・洋食・その他のいずれかが入ります"
+        "404":
+          description: 指定されたグループが見つかりません。
+    post:
+      summary: カレンダー料理情報の登録
+      description: グループのカレンダーに新しい料理情報を登録します。
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: グループのID
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                  example: "yyyy-mm-dd"
+                recipeId:
+                  type: integer
+                  example: 3
+      responses:
+        "201":
+          description: カレンダーに料理が正常に登録されました。
+        "404":
+          description: 指定されたグループまたは料理が見つかりません。
+    delete:
+      summary: カレンダー料理情報の削除
+      description: カレンダーから特定の料理情報を削除します。
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: グループのID。
+          schema:
+            type: integer
+        - name: date
+          in: query
+          required: true
+          description: 料理が登録されている日付。
+          schema:
+            type: string
+            format: date
+        - name: recipeId
+          in: query
+          required: true
+          description: 削除対象の料理ID。
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: カレンダーから料理が正常に削除されました。
+        "404":
+          description: 指定されたグループ、料理、またはカレンダーエントリーが見つかりません。
+    put:
+      summary: カレンダー料理情報の変更
+      description: カレンダーに登録されている特定の料理情報を変更します。
+      parameters:
+        - name: groupId
+          in: path
+          required: true
+          description: グループのID。
+          schema:
+            type: integer
+        - name: date
+          in: query
+          required: true
+          description: 料理が登録されている日付。
+          schema:
+            type: string
+            format: date
+        - name: recipeId
+          in: query
+          required: true
+          description: 変更対象の料理ID。
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newRecipeId:
+                  type: integer
+                  example: 4
+      responses:
+        "200":
+          description: カレンダーの料理情報が正常に変更されました。
+        "404":
+          description: 指定されたグループ、料理、またはカレンダーエントリーが見つかりません。

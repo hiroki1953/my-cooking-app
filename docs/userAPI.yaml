@@ -1,0 +1,193 @@
+openapi: 3.0.0
+info:
+  title: ユーザー管理API
+  version: 1.0.0
+paths:
+  /user:
+    get:
+      summary: ユーザー情報の取得
+      description: ログイン中のユーザー情報を取得します。
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: ユーザー情報の取得に成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    description: ユーザーID。
+                    example: 1
+                  user_name:
+                    type: string
+                    description: ユーザー名。
+                    example: 山田太郎
+                  email:
+                    type: string
+                    description: ユーザーのメールアドレス。
+                    example: taro@example.com
+                  created_at:
+                    type: string
+                    format: date-time
+                    description: アカウント作成日時。
+                    example: "2024-12-01T10:00:00Z"
+        "401":
+          description: 認証エラー。トークンが無効または未提供です。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Unauthorized access.
+
+    put:
+      summary: ユーザー情報の更新
+      description: ログイン中のユーザー情報を更新します。
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                  description: 新しいユーザー名。
+                  example: 山田花子
+                email:
+                  type: string
+                  description: 新しいメールアドレス。
+                  example: hanako@example.com
+      responses:
+        "200":
+          description: ユーザー情報の更新に成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    description: ユーザーID。
+                    example: 1
+                  message:
+                    type: string
+                    description: 更新成功メッセージ。
+                    example: User information updated successfully.
+        "400":
+          description: 入力データが無効です。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Invalid email format.
+        "401":
+          description: 認証エラー。トークンが無効または未提供です。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Unauthorized access.
+
+    delete:
+      summary: ユーザーアカウントの削除
+      description: ログイン中のユーザーのアカウントを削除します。
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: アカウント削除成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: 削除成功メッセージ。
+                    example: User account deleted successfully.
+        "401":
+          description: 認証エラー。トークンが無効または未提供です。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Unauthorized access.
+
+  /users:
+    post:
+      summary: ユーザー登録
+      description: 新しいユーザーを登録します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_name:
+                  type: string
+                  description: ユーザー名。
+                  example: 山田太郎
+                email:
+                  type: string
+                  description: メールアドレス。
+                  example: taro@example.com
+                password:
+                  type: string
+                  description: パスワード（プレーンテキストで送信されます）。
+                  example: securepassword
+      responses:
+        "201":
+          description: ユーザー登録成功。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user_id:
+                    type: integer
+                    description: 登録されたユーザーのID。
+                    example: 1
+                  message:
+                    type: string
+                    description: 登録成功メッセージ。
+                    example: User successfully registered.
+        "400":
+          description: 無効な入力データ。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Email already in use.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

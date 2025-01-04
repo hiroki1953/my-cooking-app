@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  title: ユーザー認証API
+  version: 1.0.0
+paths:
+  /auth/login:
+    post:
+      summary: ユーザーログイン
+      description: メールアドレスとパスワードを使用して認証を行い、アクセストークンを取得します。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  description: ユーザーのメールアドレス。
+                  example: taro@example.com
+                password:
+                  type: string
+                  description: ユーザーのパスワード。
+                  example: securepassword
+      responses:
+        "200":
+          description: ログイン成功。アクセストークンが返されます。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                    description: 発行されたJWTアクセストークン。
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+                  token_type:
+                    type: string
+                    description: トークンの種類（通常は"Bearer"）。
+                    example: Bearer
+        "401":
+          description: 認証失敗。メールアドレスまたはパスワードが無効です。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Invalid email or password.
+
+  /auth/logout:
+    post:
+      summary: ユーザーログアウト
+      description: 現在のセッションを無効化します。
+      security:
+        - bearerAuth: [] # 認証トークンが必要
+      responses:
+        "200":
+          description: ログアウト成功。セッションが無効化されました。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    description: ログアウト成功メッセージ。
+                    example: Logged out successfully.
+        "401":
+          description: 認証エラー。トークンが無効または未提供です。
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ。
+                    example: Unauthorized access.
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
