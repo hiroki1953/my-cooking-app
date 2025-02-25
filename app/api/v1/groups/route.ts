@@ -1,8 +1,14 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { supabase } from "@/lib/initSupabase";
 
-export async function GET(req: NextRequest) {
-  // ✅ 認証チェック（リクエストを渡す必要あり）
+// ✅ `group_members` の型を定義
+type GroupMember = {
+  group_id: number;
+  group_name: string;
+};
+
+export async function GET() {
+  // ✅ 認証チェック
   const {
     data: { user },
     error: authError,
@@ -35,10 +41,10 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "No groups found." }, { status: 404 });
   }
 
-  // ✅ レスポンスを整形
-  const response = data.map((group) => ({
+  // ✅ `GroupMember` 型を適用
+  const response: GroupMember[] = data.map((group) => ({
     group_id: group.group_id,
-    group_name: group.groups?.group_name || "Unknown",
+    group_name: group.groups[0]?.group_name || null,
   }));
 
   return NextResponse.json(response, { status: 200 });
