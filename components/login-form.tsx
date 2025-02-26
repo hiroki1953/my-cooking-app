@@ -3,10 +3,20 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { InputField } from "./input-field";
+import { useRouter } from "next/navigation";
 
 interface LoginFormData {
   email: string;
   password: string;
+}
+
+interface ApiResponse {
+  message: string;
+  user: {
+    id: string;
+    email: string;
+    groups: { group_id: number; group_name: string | null }[];
+  };
 }
 
 export const LoginForm: React.FC = () => {
@@ -16,6 +26,7 @@ export const LoginForm: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormData>();
   const [loginError, setLoginError] = useState<string | null>(null);
+  const router = useRouter();
 
   const onSubmit = async (data: LoginFormData) => {
     setLoginError(null); // エラー状態をリセット
@@ -29,17 +40,21 @@ export const LoginForm: React.FC = () => {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
-
       if (!response.ok) {
-        // APIから返されたエラーメッセージを表示
-        setLoginError(result.error || "ログインに失敗しました");
+        const errorResult = await response.json();
+        setLoginError(errorResult.error || "ログインに失敗しました");
         return;
       }
 
+      const result: ApiResponse = await response.json();
       console.log("Login successful:", result);
-      alert("ログインに成功しました！");
-      // 必要に応じてリダイレクトやトークンの保存を行います
+
+      if (result.user.groups.length > 0) {
+        // 最初のグループのIDでリダイレクト
+        router.push(`/groups/${result.user.groups[0].group_id}/calendar`);
+      } else {
+        setLoginError("所属グループが見つかりませんでした");
+      }
     } catch (error) {
       console.error("Login error:", error);
       setLoginError("ログイン中に予期せぬエラーが発生しました");
