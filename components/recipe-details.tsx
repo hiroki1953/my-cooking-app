@@ -6,9 +6,14 @@ import { ReceiptText } from "lucide-react";
 interface RecipeDetailsProps {
   selectedDate: Date;
   recipes: DayRecipe[];
+  groupId: string | null;
 }
 
-export function RecipeDetails({ selectedDate, recipes }: RecipeDetailsProps) {
+export function RecipeDetails({
+  selectedDate,
+  recipes,
+  groupId,
+}: RecipeDetailsProps) {
   const selectedRecipes =
     recipes.find(
       (r) =>
@@ -37,14 +42,16 @@ export function RecipeDetails({ selectedDate, recipes }: RecipeDetailsProps) {
       ) : (
         <p className="text-gray-600">この日の料理は登録されていません。</p>
       )}
-      <Link
-        href={`/meal/${selectedDate.getFullYear()}-${
-          selectedDate.getMonth() + 1
-        }-${selectedDate.getDate()}`}
-        className="absolute right-4 bottom-4 bg-pink-500 text-white rounded-lg shadow hover:bg-pink-600 flex items-center gap-2 px-4 py-2"
-      >
-        <ReceiptText />
-      </Link>
+      {groupId && (
+        <Link
+          href={`meal/${selectedDate.getFullYear()}-${
+            selectedDate.getMonth() + 1
+          }-${selectedDate.getDate()}`}
+          className="absolute right-4 bottom-4 bg-pink-500 text-white rounded-lg shadow hover:bg-pink-600 flex items-center gap-2 px-4 py-2"
+        >
+          <ReceiptText />
+        </Link>
+      )}
     </div>
   );
 }

@@ -4,7 +4,7 @@ import { loginUser } from "@/lib/services/authService";
 export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
-    const { user, groups } = await loginUser(email, password);
+    const { user, groups, access_token } = await loginUser(email, password);
 
     // Cookieにアクセストークンを設定
     const response = NextResponse.json({
@@ -16,12 +16,14 @@ export async function POST(req: Request) {
       },
     });
 
-    response.cookies.set("access_token", user.session?.access_token || "", {
+    response.cookies.set("access_token", access_token || "", {
       httpOnly: true,
       secure: true,
       path: "/",
-      maxAge: 60 * 60 * 24, // 1日
+      // 2週間
+      maxAge: 60 * 60 * 24 * 14,
     });
+
 
     return response;
   } catch (error: any) {

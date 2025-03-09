@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CompactCalendar } from "./compact-calendar";
 import { RecipeDetails } from "./recipe-details";
 import { DayRecipe } from "../types/calendar";
+import { useGroupId } from "@/hooks/useGroupId";
 
 interface RecipeCalendarProps {
   initialRecipes: DayRecipe[];
@@ -13,6 +14,10 @@ export function RecipeCalendar({ initialRecipes }: RecipeCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [recipes] = useState(initialRecipes);
+  const { groupId, error } = useGroupId(); // ✅ グループIDを取得
+  if (error) {
+    return <p className="text-red-500">グループ情報を取得できませんでした。</p>;
+  }
 
   const handlePrevMonth = () => {
     setCurrentDate(
@@ -42,7 +47,11 @@ export function RecipeCalendar({ initialRecipes }: RecipeCalendarProps) {
         />
       </div>
       <div className="w-full md:w-1/2">
-        <RecipeDetails selectedDate={selectedDate} recipes={recipes} />
+        <RecipeDetails
+          selectedDate={selectedDate}
+          recipes={recipes}
+          groupId={groupId}
+        />
       </div>
     </div>
   );

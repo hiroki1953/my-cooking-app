@@ -7,5 +7,5 @@ export async function findUserByEmailAndPassword(email: string, password: string
     throw new Error(error.message);
   }
 
-  return data.user;
+  return data;
 }

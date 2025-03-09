@@ -1,41 +1,26 @@
+"use client";
+
 import { RecipeCalendar } from "@/components/recipe-calendar";
-import { fetchFromApi } from "@/lib/fetch";
+import { useGroupId } from "@/hooks/useGroupId";
+import { useFetchRecipes } from "@/hooks/useFetchRecipes";
 
-export default async function Page({
-  params,
-}: {
-  params: { groupId?: string };
-}) {
-  // groupId を安全に取得
-  if (!params?.groupId) {
-    return (
-      <div className="text-center text-red-500">グループIDが見つかりません</div>
-    );
-  }
+export default function RecipeCalendarPage() {
+  const { groupId, error: groupIdError } = useGroupId();
+  const {
+    initialRecipes,
+    loading,
+    error: fetchError,
+  } = useFetchRecipes(groupId);
 
-  const groupId = params.groupId;
+  if (groupIdError)
+    return <div className="text-center text-red-500">{groupIdError}</div>;
+  if (loading) return <div className="text-center">データを読み込み中...</div>;
+  if (fetchError)
+    return <div className="text-center text-red-500">{fetchError}</div>;
 
-  try {
-    // サーバーでデータを取得
-    const data = await fetchFromApi(`/api/v1/groups/${groupId}/calendar`, {
-      cache: "no-store", // 最新データを取得
-    });
-
-    // 受け取ったdataからinitialRecipes配列を生成
-    const initialRecipes = data.map((item) => ({
-      date: new Date(item.date),
-      recipes: item.dishes, // APIで`dishes`になっていると仮定
-    }));
-
-    return (
-      <div className="container mx-auto py-8">
-        <RecipeCalendar initialRecipes={initialRecipes} />
-      </div>
-    );
-  } catch (error) {
-    console.error("カレンダーデータの取得エラー:", error);
-    return (
-      <div className="text-center text-red-500">データの取得に失敗しました</div>
-    );
-  }
+  return (
+    <div className="container mx-auto py-8">
+      <RecipeCalendar initialRecipes={initialRecipes} />
+    </div>
+  );
 }

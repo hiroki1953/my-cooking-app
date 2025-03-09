@@ -47,13 +47,11 @@ export const LoginForm: React.FC = () => {
       }
 
       const result: ApiResponse = await response.json();
-      console.log("Login successful:", result);
-
       if (result.user.groups.length > 0) {
         // 最初のグループのIDでリダイレクト
         router.push(`/groups/${result.user.groups[0].group_id}/calendar`);
       } else {
-        setLoginError("所属グループが見つかりませんでした");
+        router.push(`/groups/choose`);
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -69,7 +67,11 @@ export const LoginForm: React.FC = () => {
             ログイン
           </h2>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="mt-8 space-y-6"
+          onSubmit={handleSubmit(onSubmit)}
+          method="POST"
+        >
           <InputField
             label="メールアドレス"
             name="email"

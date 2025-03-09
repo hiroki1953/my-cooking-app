@@ -53,7 +53,6 @@ export const RegistrationForm: React.FC = () => {
       }
 
       const responseData = await response.json();
-      console.log("Registration successful:", responseData);
       alert("ユーザー登録に成功しました！");
       //TOPへ遷移
       window.location.href = "/";
