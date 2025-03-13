@@ -16,7 +16,6 @@ export const RegistrationForm: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<RegistrationFormData>();
   const [registrationError, setRegistrationError] = useState<string | null>(
     null
@@ -53,8 +52,8 @@ export const RegistrationForm: React.FC = () => {
       }
 
       const responseData = await response.json();
+      console.log("Registration successful:", responseData); // ✅ ここでログを出す
       alert("ユーザー登録に成功しました！");
-      //TOPへ遷移
       window.location.href = "/";
     } catch (error) {
       console.error("Registration error:", error);

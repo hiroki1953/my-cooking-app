@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/initSupabase";
+import { CalendarRecipeRow } from "@/types/calendar";
 
 export async function getCalendarByGroupId(
   groupId: number,
@@ -39,7 +40,8 @@ export async function getCalendarByGroupId(
     query = query.eq("date", date);
   }
 
-  const { data, error } = await query;
+  // ここで型を上書きして「recipes は単一オブジェクトだよ」と教える
+  const { data, error } = await query.returns<CalendarRecipeRow>();
 
   if (error) {
     throw new Error("Database error");
@@ -53,7 +55,6 @@ export async function insertCalendarRecipe(
   date: string,
   recipeId: number
 ) {
-
   const { data, error } = await supabase
     .from("calendar_recipes")
     .insert({
@@ -71,8 +72,12 @@ export async function insertCalendarRecipe(
 }
 
 // ✅ 削除
-export async function removeCalendarRow(groupId: number, date: string, recipeId: number) {
-  let query = supabase
+export async function removeCalendarRow(
+  groupId: number,
+  date: string,
+  recipeId: number
+) {
+  const query = supabase
     .from("calendar_recipes")
     .delete()
     .eq("group_id", groupId)

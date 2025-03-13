@@ -1,13 +1,16 @@
 export interface Ingredient {
+  ingredients: {
+    ingredient_name: string;
+  };
   id?: number;
-  name: string;
   unit: string;
+  quantity: number;
 }
 
 export interface Step {
   id?: number;
-  step: string;
-  description: string;
+  step_num: number;
+  step_description: string;
 }
 
 export type Dish = {

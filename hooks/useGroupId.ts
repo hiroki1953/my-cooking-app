@@ -16,7 +16,11 @@ export function useGroupId() {
         setError("グループIDが見つかりません");
         return;
       }
-      setGroupId(resolvedParams.groupId);
+      setGroupId(
+        Array.isArray(resolvedParams.groupId)
+          ? resolvedParams.groupId[0]
+          : resolvedParams.groupId
+      );
     }
 
     resolveParams();

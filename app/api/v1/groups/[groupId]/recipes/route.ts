@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchRecipe, createRecipe ,updateRecipe,fetchRecipeById} from "@/lib/services/recipeService";
+import {
+  fetchRecipe,
+  createRecipe,
+  updateRecipe,
+  fetchRecipeById,
+} from "@/lib/services/recipeService";
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ groupId?: string; }> }
+  context: { params: Promise<{ groupId?: string }> }
 ) {
   try {
     // paramsをawaitして、groupIdとrecipeIdを取得
@@ -11,7 +16,10 @@ export async function GET(
     const recipeId = req.nextUrl.searchParams.get("recipeId");
 
     if (!groupId) {
-      return NextResponse.json({ error: "groupId is missing" }, { status: 400 });
+      return NextResponse.json(
+        { error: "groupId is missing" },
+        { status: 400 }
+      );
     }
     const groupIdInt = parseInt(groupId, 10);
     if (isNaN(groupIdInt)) {
@@ -22,16 +30,21 @@ export async function GET(
     if (recipeId) {
       const recipeIdInt = parseInt(recipeId, 10);
       if (isNaN(recipeIdInt)) {
-        return NextResponse.json({ error: "Invalid recipe ID" }, { status: 400 });
+        return NextResponse.json(
+          { error: "Invalid recipe ID" },
+          { status: 400 }
+        );
       }
       const recipe = await fetchRecipeById(recipeIdInt);
 
       if (!recipe) {
-        return NextResponse.json({ error: "Recipe not found" }, { status: 404 });
+        return NextResponse.json(
+          { error: "Recipe not found" },
+          { status: 404 }
+        );
       }
       return NextResponse.json(recipe, { status: 200 });
     } else {
-
       // recipeIdがない場合は、グループ全体のレシピ情報を取得
       const recipes = await fetchRecipe(groupIdInt);
       return NextResponse.json(recipes, { status: 200 });
@@ -52,7 +65,10 @@ export async function POST(
     // パスパラメータをawait
     const { groupId } = await context.params;
     if (!groupId) {
-      return NextResponse.json({ error: "groupId is missing" }, { status: 400 });
+      return NextResponse.json(
+        { error: "groupId is missing" },
+        { status: 400 }
+      );
     }
 
     const groupIdInt = parseInt(groupId, 10);
@@ -65,7 +81,10 @@ export async function POST(
     const { name, category, parsedIngredients, parsedSteps } = body;
 
     if (!name) {
-      return NextResponse.json({ error: "Recipe name is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Recipe name is required" },
+        { status: 400 }
+      );
     }
 
     // サービス層でレシピ作成処理を実行
@@ -78,19 +97,28 @@ export async function POST(
     );
 
     // 作成したレシピデータを返す
-    return NextResponse.json({ message: "Recipe created", data: newRecipe }, { status: 201 });
+    return NextResponse.json(
+      { message: "Recipe created", data: newRecipe },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.error("Error creating recipe:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-export async function PATCH(req: NextRequest,   context: { params: Promise<{ groupId?: string }> }) {
+export async function PATCH(
+  req: NextRequest,
+  context: { params: Promise<{ groupId?: string }> }
+) {
   try {
     // パスパラメータをawait
     const { groupId } = await context.params;
     if (!groupId) {
-      return NextResponse.json({ error: "groupId is missing" }, { status: 400 });
+      return NextResponse.json(
+        { error: "groupId is missing" },
+        { status: 400 }
+      );
     }
 
     const groupIdInt = parseInt(groupId, 10);
@@ -99,7 +127,10 @@ export async function PATCH(req: NextRequest,   context: { params: Promise<{ gro
     }
     const recipeId = req.nextUrl.searchParams.get("recipeId");
     if (!recipeId) {
-      return NextResponse.json({ error: "recipeId is missing" }, { status: 400 });
+      return NextResponse.json(
+        { error: "recipeId is missing" },
+        { status: 400 }
+      );
     }
     const recipeIdInt = parseInt(recipeId, 10);
     if (isNaN(recipeIdInt)) {
@@ -111,7 +142,10 @@ export async function PATCH(req: NextRequest,   context: { params: Promise<{ gro
     // サービス層で更新
     const updated = await updateRecipe(recipeIdInt, body);
 
-    return NextResponse.json({ message: "Recipe updated", data: updated }, { status: 200 });
+    return NextResponse.json(
+      { message: "Recipe updated", data: updated },
+      { status: 200 }
+    );
   } catch (err: any) {
     console.error("Update error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });

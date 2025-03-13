@@ -17,3 +17,26 @@ export interface CalendarRecipe {
 }
 
 export const WEEKDAYS = ["日", "月", "火", "水", "木", "金", "土"];
+
+export type CalendarRecipeRow = {
+  id: number;
+  date: string;
+  recipe_id: number | null;
+  recipes: {
+    recipe_name: string;
+    category: number;
+    steps: {
+      step_id: number;
+      step_num: number;
+      step_description: string;
+    }[];
+    recipe_ingredients: {
+      quantity: number | null;
+      unit: string | null;
+      ingredient_id: number;
+      ingredients: {
+        ingredient_name: string;
+      }[];
+    }[];
+  };
+}[];

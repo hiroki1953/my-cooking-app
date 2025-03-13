@@ -11,7 +11,7 @@ export async function getRecipeByGroupId(groupId: number) {
         )
       `
     )
-    .eq("group_id", groupId)
+    .eq("group_id", groupId);
 
   if (error) {
     throw new Error("Database error");
@@ -73,18 +73,15 @@ export async function insertRecipe(name: string, category: string) {
 
 // ✅ group_recipes に (group_id, recipe_id) をINSERT
 export async function linkRecipeToGroup(groupId: number, recipeId: number) {
-  const { error } = await supabase
-    .from("group_recipes")
-    .insert({
-      group_id: groupId,
-      recipe_id: recipeId,
-    });
+  const { error } = await supabase.from("group_recipes").insert({
+    group_id: groupId,
+    recipe_id: recipeId,
+  });
 
   if (error) {
     throw new Error("Error inserting into group_recipes: " + error.message);
   }
 }
-
 
 /**
  * 食材リスト(ingredients配列)を処理して、
@@ -127,14 +124,12 @@ export async function insertIngredients(recipeId: number, ingredients: any[]) {
     }
 
     // 3) recipe_ingredients テーブルに (recipe_id, ingredient_id, quantity, unit) を追加
-    const { error: relErr } = await supabase
-      .from("recipe_ingredients")
-      .insert({
-        recipe_id: recipeId,
-        ingredient_id: ingredientId,
-        quantity: ing.quantity,
-        unit: ing.unit,
-      });
+    const { error: relErr } = await supabase.from("recipe_ingredients").insert({
+      recipe_id: recipeId,
+      ingredient_id: ingredientId,
+      quantity: ing.quantity,
+      unit: ing.unit,
+    });
 
     if (relErr) {
       throw new Error("Error inserting recipe_ingredients: " + relErr.message);
@@ -154,10 +149,7 @@ export async function insertSteps(recipeId: number, steps: any[]) {
     step_num: index + 1, // 1から始まるステップ番号
   }));
 
-  const { data, error } = await supabase
-    .from("steps")
-    .insert(records)
-    .select();
+  const { data, error } = await supabase.from("steps").insert(records).select();
 
   if (error) {
     throw new Error("Error inserting steps: " + error.message);
@@ -166,9 +158,12 @@ export async function insertSteps(recipeId: number, steps: any[]) {
   return data;
 }
 
-
 // 1) recipe本体をUPDATE
-export async function updateRecipeRow(recipeId: number, name: string, category: string) {
+export async function updateRecipeRow(
+  recipeId: number,
+  name: string,
+  category: string
+) {
   const { data, error } = await supabase
     .from("recipes")
     .update({ recipe_name: name, category })
@@ -181,7 +176,7 @@ export async function updateRecipeRow(recipeId: number, name: string, category: 
 
 export async function updateIngredient(name: string): Promise<number> {
   // 既存のingredient_nameを確認
-  let { data, error } = await supabase
+  const { data, error } = await supabase
     .from("ingredients")
     .select("ingredient_id")
     .eq("ingredient_name", name)
@@ -194,11 +189,12 @@ export async function updateIngredient(name: string): Promise<number> {
       .insert({ ingredient_name: name })
       .select("ingredient_id")
       .single();
-    if (insertError) throw new Error("Insert new ingredient failed: " + insertError.message);
+    if (insertError)
+      throw new Error("Insert new ingredient failed: " + insertError.message);
 
     return newIngredient.ingredient_id;
   } else if (error) {
-    throw new Error("Fetch ingredient failed: " + error.message);
+    throw new Error("Fetch ingredient failed: " + error);
   }
 
   return data.ingredient_id;
@@ -213,7 +209,8 @@ export async function updateIngredients(recipeId: number, ingredients: any[]) {
     .from("recipe_ingredients")
     .delete()
     .eq("recipe_id", recipeId);
-  if (delError) throw new Error("Delete old ingredients failed: " + delError.message);
+  if (delError)
+    throw new Error("Delete old ingredients failed: " + delError.message);
 
   const updatedIngredients = await Promise.all(
     ingredients.map(async (ing) => {
@@ -230,13 +227,14 @@ export async function updateIngredients(recipeId: number, ingredients: any[]) {
   const { error: insError } = await supabase
     .from("recipe_ingredients")
     .insert(updatedIngredients);
-  if (insError) throw new Error("Insert new ingredients failed: " + insError.message);
+  if (insError)
+    throw new Error("Insert new ingredients failed: " + insError.message);
 }
 
 // 3) stepsをUPDATE
 export async function updateSteps(recipeId: number, steps: any[]) {
   // 同様に旧レコード消して、新レコードを作り直すか、
-//   あるいは step_num の変更を考慮して1つずつUPDATEするか
+  //   あるいは step_num の変更を考慮して1つずつUPDATEするか
   const { error: delError } = await supabase
     .from("steps")
     .delete()
@@ -249,8 +247,6 @@ export async function updateSteps(recipeId: number, steps: any[]) {
     step_description: step.description,
     step_num: index + 1,
   }));
-  const { error: insError } = await supabase
-    .from("steps")
-    .insert(records);
+  const { error: insError } = await supabase.from("steps").insert(records);
   if (insError) throw new Error("Insert new steps failed: " + insError.message);
 }

@@ -1,4 +1,14 @@
-import { getRecipeByGroupId, insertIngredients, insertSteps, insertRecipe, linkRecipeToGroup,updateRecipeRow,updateIngredients,updateSteps,getRecipeByRecipeId, updateIngredient} from "@/lib/repositories/recipeRepository";
+import {
+  getRecipeByGroupId,
+  insertIngredients,
+  insertSteps,
+  insertRecipe,
+  linkRecipeToGroup,
+  updateRecipeRow,
+  updateIngredients,
+  updateSteps,
+  getRecipeByRecipeId,
+} from "@/lib/repositories/recipeRepository";
 
 export async function fetchRecipe(groupId: number) {
   const data = await getRecipeByGroupId(groupId);
@@ -10,7 +20,7 @@ export async function fetchRecipe(groupId: number) {
   return data;
 }
 export async function fetchRecipeById(recipeId: number) {
-  const data = await getRecipeByRecipeId(recipeId);  // recipeIdを使って取得する関数がないので、groupIdを使って取得する関数を使う
+  const data = await getRecipeByRecipeId(recipeId); // recipeIdを使って取得する関数がないので、groupIdを使って取得する関数を使う
   if (!data || data.length === 0) {
     return null;
   }
@@ -28,7 +38,7 @@ export async function createRecipe(
   // 1) recipesテーブルにレシピ情報をINSERT
   const newRecipe = await insertRecipe(name, category);
 
- // 2) group_recipesテーブルに (group_id, recipe_id) をINSERT
+  // 2) group_recipesテーブルに (group_id, recipe_id) をINSERT
   await linkRecipeToGroup(groupId, newRecipe.recipe_id);
 
   // 3) ingredientsをINSERT (必要があれば)

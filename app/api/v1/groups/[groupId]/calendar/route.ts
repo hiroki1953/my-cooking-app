@@ -1,16 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addCalendarRecipe, fetchCalendar,removeCalendarRecipe } from "@/lib/services/calendarService";
+import {
+  addCalendarRecipe,
+  fetchCalendar,
+  removeCalendarRecipe,
+} from "@/lib/services/calendarService";
 
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ groupId?: string }> } // ✅ `params` を `Promise` として扱う
 ) {
   try {
-
     // ✅ `params` を `await` する
     const { groupId } = await context.params;
     if (!groupId) {
-      return NextResponse.json({ error: "groupId is missing" }, { status: 400 });
+      return NextResponse.json(
+        { error: "groupId is missing" },
+        { status: 400 }
+      );
     }
 
     const groupIdInt = parseInt(groupId, 10);
@@ -24,7 +30,6 @@ export async function GET(
 
     // カレンダー情報の取得
     const calendar = await fetchCalendar(groupIdInt, date);
-
 
     return NextResponse.json(calendar, { status: 200 });
   } catch (error: any) {
@@ -42,7 +47,10 @@ export async function POST(
     // paramsをawait
     const { groupId } = await context.params;
     if (!groupId) {
-      return NextResponse.json({ error: "groupId is missing" }, { status: 400 });
+      return NextResponse.json(
+        { error: "groupId is missing" },
+        { status: 400 }
+      );
     }
 
     const groupIdInt = parseInt(groupId, 10);
@@ -74,11 +82,13 @@ export async function DELETE(
   context: { params: Promise<{ groupId?: string }> }
 ) {
   try {
-
     // パスパラメータ
     const { groupId } = await context.params;
     if (!groupId) {
-      return NextResponse.json({ error: "groupId is missing" }, { status: 400 });
+      return NextResponse.json(
+        { error: "groupId is missing" },
+        { status: 400 }
+      );
     }
 
     const groupIdInt = parseInt(groupId, 10);
@@ -95,13 +105,19 @@ export async function DELETE(
     const { id } = body; // 削除対象の dishId (recipe_id)
 
     if (!id) {
-      return NextResponse.json({ error: "recipe_id (id) is missing" }, { status: 400 });
+      return NextResponse.json(
+        { error: "recipe_id (id) is missing" },
+        { status: 400 }
+      );
     }
 
     // サービス層で削除処理
     await removeCalendarRecipe(groupIdInt, date, id);
 
-    return NextResponse.json({ message: "Deleted successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Deleted successfully" },
+      { status: 200 }
+    );
   } catch (error: any) {
     console.error("Error deleting calendar recipe:", error.message);
     return NextResponse.json({ error: error.message }, { status: 500 });

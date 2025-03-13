@@ -1,38 +1,66 @@
-import { getCalendarByGroupId,insertCalendarRecipe,removeCalendarRow } from "@/lib/repositories/calendarRepository";
+import {
+  getCalendarByGroupId,
+  insertCalendarRecipe,
+  removeCalendarRow,
+} from "@/lib/repositories/calendarRepository";
 
-type CalendarRecipe = {
+type Dish = {
   id: number;
-  date: string | null;
-  recipe_id: number | null;
-  recipe_name: string | null;
-  recipe_category: number | null;
+  name: string | null;
+  category: number | null;
+  // "recipe_ingredients" から得られる要素の型に合わせる
+  ingredients: Array<{
+    // DBの "ingredient_id" を id と呼びたいなら
+    id?: number; // or rename ingredient_id → id
+    unit: string | null; // DBでは string | null
+    quantity: number | null; // DBでは number | null
+    ingredients: { ingredient_name: string }[];
+    // ↑ データに "ingredients" フィールドが必ずあるなら optional にしなくてもOK
+  }>;
+  steps: {
+    step_id: number;
+    step_num: number;
+    step_description: string;
+  }[];
 };
 
-export async function fetchCalendar(groupId: number,date?: string | null): Promise<CalendarRecipe[]> {
+type CalendarDay = {
+  id: number; // entry.id
+  date: string | null; // entry.date
+  dishes: Dish[]; // 複数のdishを持つ
+};
+
+export async function fetchCalendar(
+  groupId: number,
+  date?: string | null
+): Promise<CalendarDay[]> {
+  // ← CalendarDay[] に
   const data = await getCalendarByGroupId(groupId, date);
 
   if (!data || data.length === 0) {
     return [];
   }
 
-  const calendarMap: { [key: string]: CalendarRecipe } = {};
+  const calendarMap: { [key: string]: CalendarDay } = {};
 
   data.forEach((entry) => {
-    const date = entry.date;
+    // 配列の最初の要素を取り出す
+
+    const dateKey = entry.date; // 変数名をわかりやすく
     const dish = {
-      id: entry.recipe_id,
+      id: entry.recipe_id!,
       name: entry.recipes?.recipe_name || null,
       category: entry.recipes?.category || null,
-      ingredients: entry.recipes.recipe_ingredients || [],
-      steps: entry.recipes.steps || [],
+      ingredients: entry.recipes?.recipe_ingredients || [],
+      steps: entry.recipes?.steps || [],
     };
 
-    if (calendarMap[date]) {
-      calendarMap[date].dishes.push(dish);
+    if (calendarMap[dateKey]) {
+      calendarMap[dateKey].dishes.push(dish);
     } else {
-      calendarMap[date] = {
+      calendarMap[dateKey] = {
         id: entry.id,
-        date: date,
+        date: dateKey,
         dishes: [dish],
       };
     }
@@ -57,7 +85,11 @@ export async function addCalendarRecipe(
 }
 
 // ✅ 削除処理
-export async function removeCalendarRecipe(groupId: number, date: string | null, recipeId: number) {
+export async function removeCalendarRecipe(
+  groupId: number,
+  date: string | null,
+  recipeId: number
+) {
   if (!date) {
     throw new Error("date is required to delete a calendar recipe");
   }

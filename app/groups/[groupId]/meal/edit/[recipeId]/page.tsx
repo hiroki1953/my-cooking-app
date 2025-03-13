@@ -1,6 +1,8 @@
-// app/recipes/[recipeId]/page.tsx
+"use client";
 
-import { RecipeForm } from "@/components/RecipeForm"; // 編集フォーム用のコンポーネント例
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import { RecipeForm } from "@/components/RecipeForm";
 import { fetchFromApi } from "@/lib/fetch";
 
 // 既存メニュー一覧の型（イメージ）
@@ -17,45 +19,41 @@ type Recipe = {
   }[];
 };
 
-// サーバーコンポーネント
-export default async function RecipeEditPage({
-  params,
-}: {
-  params: { groupId: string; recipeId: string };
-}) {
-  // 1) 既存データを取得
-  const groupId = params.groupId;
+export default function Page() {
+  const { groupId, recipeId } = useParams();
+  const [recipe, setRecipe] = useState<Recipe | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const recipeId = params.recipeId;
+  // クライアントサイドでデータをフェッチ
+  useEffect(() => {
+    if (!groupId || !recipeId) return; // パラメータが取れない場合は何もしない
 
-  const recipe = await getRecipe(groupId, recipeId);
+    setLoading(true);
+    fetchFromApi(`/api/v1/groups/${groupId}/recipes?recipeId=${recipeId}`)
+      .then((data) => {
+        setRecipe(data || null);
+      })
+      .catch((error) => {
+        console.error("Fetch error:", error);
+        setRecipe(null);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [groupId, recipeId]);
+
+  if (loading) {
+    return <div>読み込み中...</div>;
+  }
+
   if (!recipe) {
     return <div>レシピが見つかりませんでした</div>;
   }
 
-  // 2) フォームコンポーネントに初期値を渡す
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">レシピ編集</h1>
-      <RecipeForm initialRecipe={recipe} groupId={groupId} />
+      <RecipeForm initialRecipe={recipe} groupId={groupId as string} />
     </div>
   );
-}
-
-// サーバーサイドでデータ取得
-async function getRecipe(
-  groupId: string,
-  recipeId: string
-): Promise<Recipe | null> {
-  const data = await fetchFromApi(
-    `/api/v1/groups/${groupId}/recipes?recipeId=${recipeId}`,
-    {
-      cache: "no-store",
-    }
-  );
-  if (!data) {
-    return null;
-  }
-
-  return data;
 }

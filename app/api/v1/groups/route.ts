@@ -11,10 +11,7 @@ export async function GET() {
     } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json(
-        { error: "Unauthorized access." },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Unauthorized access." });
     }
 
     // ✅ ユーザーの所属グループを取得
@@ -29,7 +26,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  try{
+  try {
     // リクエストからグループ名を取得
     const { group_name } = await req.json();
 
@@ -40,7 +37,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Supabaseでユーザー情報を取得
-    const { data: { user }, error } = await supabase.auth.getUser(token);
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser(token);
     if (error || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -61,15 +61,16 @@ export async function POST(req: NextRequest) {
 
     if (!insertErr) {
       // group_members もINSERT
-      await supabase
-        .from("group_members")
-        .insert({
-          group_id: group.group_id,
-          user_id: user.id,
-        });
+      await supabase.from("group_members").insert({
+        group_id: group.group_id,
+        user_id: user.id,
+      });
     }
 
-    return NextResponse.json({ message: "Group created", group:group }, { status: 201 });
+    return NextResponse.json(
+      { message: "Group created", group: group },
+      { status: 201 }
+    );
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

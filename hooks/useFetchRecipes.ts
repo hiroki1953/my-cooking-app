@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { fetchFromApi } from "@/lib/fetch";
+import { DayRecipe } from "../types/calendar";
 
 export function useFetchRecipes(groupId: string | null) {
-  const [initialRecipes, setInitialRecipes] = useState<
-    { date: Date; recipes: string[] }[]
-  >([]);
+  const [initialRecipes, setInitialRecipes] = useState<DayRecipe[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
