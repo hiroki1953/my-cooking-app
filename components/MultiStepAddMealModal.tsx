@@ -217,22 +217,22 @@ export function MultiStepAddMealModal({
               {/* 手順 */}
               <StepsInput steps={steps} setSteps={setSteps} />
               {/* 材料 / 作り方など追加したい場合はここでフォームを増やす */}
+              <div className="flex justify-end gap-2">
+                <Button
+                  type="submit"
+                  className="mt-4 bg-pink-500 text-white hover:bg-pink-600"
+                >
+                  登録
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setStep(1)}
+                  className="mt-4 bg-white text-pink-500 border border-pink-500 hover:bg-pink-50"
+                >
+                  戻る
+                </Button>
+              </div>
             </form>
-            <div className="flex justify-end gap-2">
-              <Button
-                type="submit"
-                className="mt-4 bg-pink-500 text-white hover:bg-pink-600"
-              >
-                登録
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => setStep(1)}
-                className="mt-4 bg-white text-pink-500 border border-pink-500 hover:bg-pink-50"
-              >
-                戻る
-              </Button>
-            </div>
           </div>
         )}
       </DialogContent>
