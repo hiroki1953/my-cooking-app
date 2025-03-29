@@ -31,7 +31,7 @@ export function HamburgerHeader() {
   return (
     <header className="bg-pink-300 text-white p-4 flex items-center justify-between relative">
       <Link href={`/groups/${groupId}/calendar`}>
-        <h1 className="text-xl font-bold">レシピアプリ</h1>
+        <h1 className="text-xl font-bold">share recipe</h1>
       </Link>
 
       {/* ハンバーガーアイコン */}

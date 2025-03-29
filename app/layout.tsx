@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <HamburgerHeader />
         <main className="flex-grow p-4">{children}</main>
         <footer className="bg-pink-300 text-white p-4 text-center">
-          © 2024 レシピアプリ
+          © 2025 share recipe
         </footer>
       </body>
     </html>
