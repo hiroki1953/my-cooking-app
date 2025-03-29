@@ -26,10 +26,17 @@ export const LoginForm: React.FC = () => {
     formState: { errors },
   } = useForm<LoginFormData>();
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
 
   const onSubmit = async (data: LoginFormData) => {
     setLoginError(null); // エラー状態をリセット
+    // すでに送信中なら何もしない
+    if (isSubmitting) return;
+
+    // ボタンを連打させないためにフラグを立てる
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/v1/auth/login", {
@@ -56,6 +63,8 @@ export const LoginForm: React.FC = () => {
     } catch (error) {
       console.error("Login error:", error);
       setLoginError("ログイン中に予期せぬエラーが発生しました");
+    } finally {
+      setIsSubmitting(false); // フラグをリセット
     }
   };
 

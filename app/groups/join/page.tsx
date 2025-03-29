@@ -21,10 +21,17 @@ export default function JoinGroupPage() {
     formState: { errors },
   } = useForm<JoinFormData>();
   const [joinError, setJoinError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
 
   const onSubmit = async (data: JoinFormData) => {
     setJoinError(null);
+    // すでに送信中なら何もしない
+    if (isSubmitting) return;
+
+    // ボタンを連打させないためにフラグを立てる
+    setIsSubmitting(true);
 
     try {
       // 例: POST /api/v1/groups/join へ codeを渡す
@@ -52,6 +59,9 @@ export default function JoinGroupPage() {
     } catch (error) {
       console.error("Join group error:", error);
       setJoinError("招待コードでの参加中にエラーが発生しました");
+    } finally {
+      // 処理が終わったらフラグを戻す
+      setIsSubmitting(false);
     }
   };
 

@@ -31,11 +31,18 @@ export default function RegisterForm() {
   } = useForm<RegisterFormData>();
   const [registerError, setRegisterError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
 
   const onSubmit = async (data: RegisterFormData) => {
     setRegisterError(null);
     setSuccessMessage(null);
+    // すでに送信中なら何もしない
+    if (isSubmitting) return;
+
+    // ボタンを連打させないためにフラグを立てる
+    setIsSubmitting(true);
 
     try {
       // 1) 新規登録API呼び出し
@@ -68,6 +75,8 @@ export default function RegisterForm() {
     } catch (error) {
       console.error("Register error:", error);
       setRegisterError("登録中に予期せぬエラーが発生しました");
+    } finally {
+      setIsSubmitting(false); // フラグをリセット
     }
   };
 
